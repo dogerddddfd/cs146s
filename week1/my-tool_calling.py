@@ -1,12 +1,12 @@
 import ast
 import json
 import os
+import sys
 from typing import Any, Dict, List, Optional, Tuple, Callable
 
-from dotenv import load_dotenv
-from ollama import chat
-
-load_dotenv()
+# Add parent directory to path to import my_llm
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from my_llm import llm, get_content
 
 NUM_RUNS_TIMES = 1
 
@@ -111,15 +111,14 @@ def extract_tool_call(text: str) -> Dict[str, Any]:
 
 
 def run_model_for_tool_call(system_prompt: str) -> Dict[str, Any]:
-    response = chat(
-        model="llama3.1:8b",
+    response = llm(
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": "Call the tool now."},
         ],
-        options={"temperature": 0.3},
+        enable_thinking=False
     )
-    content = response.message.content
+    content = get_content(response)
     return extract_tool_call(content)
 
 

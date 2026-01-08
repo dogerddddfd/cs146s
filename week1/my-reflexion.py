@@ -1,10 +1,11 @@
 import os
 import re
+import sys
 from typing import Callable, List, Tuple
-from dotenv import load_dotenv
-from ollama import chat
 
-load_dotenv()
+# Add parent directory to path to import my_llm
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from my_llm import llm, get_content
 
 NUM_RUNS_TIMES = 1
 
@@ -83,15 +84,14 @@ def evaluate_function(func: Callable[[str], bool]) -> Tuple[bool, List[str]]:
 
 
 def generate_initial_function(system_prompt: str) -> str:
-    response = chat(
-        model="llama3.1:8b",
+    response = llm(
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": "Provide the implementation now."},
         ],
-        options={"temperature": 0.2},
+        enable_thinking=False
     )
-    return extract_code_block(response.message.content)
+    return extract_code_block(get_content(response))
 
 
 def your_build_reflexion_context(prev_code: str, failures: List[str]) -> str:
@@ -119,15 +119,14 @@ def apply_reflexion(
 ) -> str:
     reflection_context = build_context(prev_code, failures)
     print(f"REFLECTION CONTEXT: {reflection_context}, {reflexion_prompt}")
-    response = chat(
-        model="llama3.1:8b",
+    response = llm(
         messages=[
             {"role": "system", "content": reflexion_prompt},
             {"role": "user", "content": reflection_context},
         ],
-        options={"temperature": 0.2},
+        enable_thinking=False
     )
-    return extract_code_block(response.message.content)
+    return extract_code_block(get_content(response))
 
 
 def run_reflexion_flow(

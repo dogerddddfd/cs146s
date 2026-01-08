@@ -1,16 +1,16 @@
 import os
 import re
+import sys
 from collections import Counter
-from dotenv import load_dotenv
-from ollama import chat
 
-load_dotenv()
+# Add parent directory to path to import my_llm
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from my_llm import llm, get_content
 
 NUM_RUNS_TIMES = 1
 
 # TODO: Fill this in! Try to get as close to 100% correctness across all runs as possible.
 YOUR_SYSTEM_PROMPT = "你是一个优秀的数学问题处理助手，一步步解释你的推理，在最后一行按照给定的格式回答问题，用数字给出答案"
-
 
 USER_PROMPT = """
 Solve this problem, then give the final answer on the last line as "Answer: <number>".
@@ -48,15 +48,14 @@ def test_your_prompt(system_prompt: str) -> bool:
     answers: list[str] = []
     for idx in range(NUM_RUNS_TIMES):
         print(f"Running test {idx + 1} of {NUM_RUNS_TIMES}")
-        response = chat(
-            model="llama3.1:8b",
+        response = llm(
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": USER_PROMPT},
             ],
-            options={"temperature": 1},
+            enable_thinking=False
         )
-        output_text = response.message.content
+        output_text = get_content(response)
         final_answer = extract_final_answer(output_text)
         print(f"Run {idx + 1} answer: {final_answer}")
         answers.append(final_answer.strip())

@@ -1,0 +1,5 @@
+{
+  "API_URL": "{{API_URL}}",
+  "MODEL": "{{MODEL}}",
+  "API_KEY": "{{API_KEY}}"
+}

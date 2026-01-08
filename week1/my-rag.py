@@ -1,10 +1,11 @@
 import os
 import re
+import sys
 from typing import List, Callable
-from dotenv import load_dotenv
-from ollama import chat
 
-load_dotenv()
+# Add parent directory to path to import my_llm
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from my_llm import llm, get_content
 
 NUM_RUNS_TIMES = 1
 
@@ -96,15 +97,14 @@ def test_your_prompt(system_prompt: str, context_provider: Callable[[List[str]],
 
     for idx in range(NUM_RUNS_TIMES):
         print(f"Running test {idx + 1} of {NUM_RUNS_TIMES}")
-        response = chat(
-            model="llama3.1:8b",
+        response = llm(
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            options={"temperature": 0.0},
+            enable_thinking=False
         )
-        output_text = response.message.content
+        output_text = get_content(response)
         code = extract_code_block(output_text)
         missing = [s for s in REQUIRED_SNIPPETS if s not in code]
         if not missing:

@@ -1,8 +1,8 @@
 import os
-from dotenv import load_dotenv
-from ollama import chat
-
-load_dotenv()
+import sys
+# Add parent directory to path to import my_llm
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from my_llm import llm, get_content
 
 NUM_RUNS_TIMES = 5
 
@@ -33,15 +33,14 @@ def test_your_prompt(system_prompt: str) -> bool:
     """
     for idx in range(NUM_RUNS_TIMES):
         print(f"Running test {idx + 1} of {NUM_RUNS_TIMES}")
-        response = chat(
-            model="mistral-nemo:12b",
+        response = llm(
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": USER_PROMPT},
             ],
-            options={"temperature": 0.5},
+            enable_thinking=False
         )
-        output_text = response.message.content.strip()
+        output_text = get_content(response).strip()
         if output_text.strip() == EXPECTED_OUTPUT.strip():
             print("SUCCESS")
             return True

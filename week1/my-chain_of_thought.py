@@ -1,35 +1,41 @@
 import os
 import re
-from dotenv import load_dotenv
-from ollama import chat
+import sys
 
-load_dotenv()
+# Add parent directory to path to import my_llm
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from my_llm import llm, get_content
 
 NUM_RUNS_TIMES = 1
 
+# YOUR_SYSTEM_PROMPT = """
+# 你是一个专业的数学模型，擅长解决数学问题，请对给定的问题一步步进行思考。
+# ---例子1：
+# 问题：3^12345 (mod 100)
+# 思考：
+# 1. 3^12345 = 3 * 3^12344
+# 2. 3^12344 = (3^2)^6172
+# 3. (3^2)^6172 = (9)^6172
+# 4. (9)^6172 = 81^3086
+# 5. 81^3086 = (81 * 81)^1543
+# 6. (81 * 81)^1543 = (6561)^1543
+# 7. 6561^1543 mod 100
+#    - 6561 mod 100 = 61
+#    - 61^2 mod 100 = 3721 mod 100 = 21
+#    - 61^4 mod 100 = 21^2 mod 100 = 441 mod 100 = 41
+#    - 61^8 mod 100 = 41^2 mod 100 = 1681 mod 100 = 81
+#    - 61^16 mod 100 = 81^2 mod 100 = 6561 mod 100 = 61
+#    - 发现周期为4，61^(4k) mod 100 = 41，61^(4k+1) mod 100 = 61，61^(4k+2) mod 100 = 21，61^(4k+3) mod 100 = 81
+#    - 1543 = 4*385 + 3，所以61^1543 mod 100 = 81
+# 8. 3^12345 mod 100 = 3 * 81 mod 100 = 243 mod 100 = 43
+
+# Answer: 43
+# ---
+# 最后按照给定的格式输出最终答案。
+# """
+
 YOUR_SYSTEM_PROMPT = """
 你是一个专业的数学模型，擅长解决数学问题，请对给定的问题一步步进行思考。
----例子1：
-问题：3^12345 (mod 100)
-思考：
-1. 3^12345 = 3 * 3^12344
-2. 3^12344 = (3^2)^6172
-3. (3^2)^6172 = (9)^6172
-4. (9)^6172 = 81^3086
-5. 81^3086 = (81 * 81)^1543
-6. (81 * 81)^1543 = (6561)^1543
-7. 6561^1543 mod 100
-   - 6561 mod 100 = 61
-   - 61^2 mod 100 = 3721 mod 100 = 21
-   - 61^4 mod 100 = 21^2 mod 100 = 441 mod 100 = 41
-   - 61^8 mod 100 = 41^2 mod 100 = 1681 mod 100 = 81
-   - 61^16 mod 100 = 81^2 mod 100 = 6561 mod 100 = 61
-   - 发现周期为4，61^(4k) mod 100 = 41，61^(4k+1) mod 100 = 61，61^(4k+2) mod 100 = 21，61^(4k+3) mod 100 = 81
-   - 1543 = 4*385 + 3，所以61^1543 mod 100 = 81
-8. 3^12345 mod 100 = 3 * 81 mod 100 = 243 mod 100 = 43
-
-Answer: 43
----
 最后按照给定的格式输出最终答案。
 """
 
@@ -70,15 +76,14 @@ def test_your_prompt(system_prompt: str) -> bool:
     """
     for idx in range(NUM_RUNS_TIMES):
         print(f"Running test {idx + 1} of {NUM_RUNS_TIMES}")
-        response = chat(
-            model="llama3.1:8b",
+        response = llm(
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": USER_PROMPT},
             ],
-            options={"temperature": 0.3},
+            enable_thinking=False
         )
-        output_text = response.message.content
+        output_text = get_content(response)
         final_answer = extract_final_answer(output_text)
         if final_answer.strip() == EXPECTED_OUTPUT.strip():
             print("SUCCESS")
