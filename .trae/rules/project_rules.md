@@ -1,0 +1,1 @@
+命令行先指定conda activate cs146s

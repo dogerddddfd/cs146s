@@ -1,20 +1,24 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional 
 
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from .exceptions import AppException, BadRequestException, NotFoundException
 
-from .db import init_db
+from .db import db
 from .routers import action_items, notes
-from . import db
-
-init_db()
 
 app = FastAPI(title="Action Item Extractor")
 
+@app.exception_handler(AppException)
+def app_exception_handler(request: Request, exc: AppException) -> JSONResponse:
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+@app.exception_handler(AppException)
+def app_exception_handler(request: Request, exc: AppException) -> JSONResponse:
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
 @app.get("/", response_class=HTMLResponse)
 def index() -> str:

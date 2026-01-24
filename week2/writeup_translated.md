@@ -22,29 +22,37 @@ SUNet ID：**TODO** \
 ### 练习 1：搭建新功能
 提示：
 ```
-TODO
+extract.py 35-35 阅读该文件和该函数，先总结该函数实现的功能，读取什么格式后输出什么内容。然后实现函数`extract_action_items_llm(text: str) -> List[str]`，调用ollama的已安装本地模型`mistral-nemo:12b`，做到无需严格格式输入也能输出活动项。需要你编写prompt、要求llm输出格式化，py处理llm输出，函数返回字符串数组。
+
+my_llm.py 参考该方法库，编写extract_action_items_api_llm()，将extract_action_items_llm的ollama调用替换
+
+哇system prompt从函数里提出来作为共用变量；再给prompt添加约定：输出语言保持与输入语言一致，输入为中文也输出中文内容
 ``` 
 
 生成的代码片段：
 ```
 TODO：列出所有修改的代码文件及其相关行号。
+extract.py 20-40 114-188
 ```
 
 ### 练习 2：添加单元测试
 提示：
 ```
-TODO
+extract_action_items_api_llm添加如下测试：混合多语言测试语言一致性、无效符号输入、无效语句、有效命令混合无效内容、复杂md格式、重复命令
 ``` 
 
 生成的代码片段：
 ```
 TODO：列出所有修改的代码文件及其相关行号。
+tests/test_extract.py 92-196
 ```
 
 ### 练习 3：重构现有代码以提高清晰度
 提示：
 ```
-TODO
+action_items.py notes.py db.py main.py 我需要对后端代码进行重构，但我水平不够看不出有那些地方可以提升，请结合给出，告诉我那些地方可以写更好，为什么这样改进更好
+
+我重构了 db.py ，现在为我检查改正 action_items.py notes.py
 ``` 
 
 生成/修改的代码片段：
@@ -56,7 +64,9 @@ TODO：列出所有修改的代码文件及其相关行号。（我们预计这�
 ### 练习 4：使用代理模式自动化小任务
 提示：
 ```
-TODO
+在现有前端界面将按钮`Extract`修改为`Extract LLM`，再新增按钮`Extract`，使用 extract.py 的启发式方案来执行
+
+公开一个最终端点来检索所有笔记。更新前端，添加一个 "List Notes" 按钮，点击该按钮时，获取并显示笔记。
 ``` 
 
 生成的代码片段：

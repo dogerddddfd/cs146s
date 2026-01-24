@@ -1,9 +1,13 @@
 import requests
 import json
-# import os
+import os
 
 def getEnvJson():
-    with open('env.json', 'r') as f:
+    # 获取当前脚本所在目录的绝对路径
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # 构建配置文件的绝对路径
+    env_path = os.path.join(script_dir, 'env.json')
+    with open(env_path, 'r') as f:
         return json.load(f)
 
 env_data = getEnvJson()

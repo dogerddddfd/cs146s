@@ -14,14 +14,16 @@ router = APIRouter(prefix="/action-items", tags=["action_items"])
 @router.get("/", response_model=list[ActionItemRead])
 def list_items(
     db: Session = Depends(get_db),
-    completed: Optional[bool] = None,
-    skip: int = 0,
+    completed: Optional[bool] = Query(None, description="Filter by completed status"),
+    skip: int = Query(0, ge=0),
     limit: int = Query(50, le=200),
     sort: str = Query("-created_at"),
 ) -> list[ActionItemRead]:
     stmt = select(ActionItem)
     if completed is not None:
-        stmt = stmt.where(ActionItem.completed.is_(completed))
+        # 确保 completed 是布尔值
+        completed_bool = bool(completed)
+        stmt = stmt.where(ActionItem.completed.is_(completed_bool))
 
     sort_field = sort.lstrip("-")
     order_fn = desc if sort.startswith("-") else asc

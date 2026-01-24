@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "cs146s-mcp-server": {
+      "url": "http://localhost:8000/mcp"
+    }
+  }
+}

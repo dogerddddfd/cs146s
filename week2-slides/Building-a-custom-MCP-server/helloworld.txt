@@ -1,0 +1,1 @@
+I am an AI coding assistant designed to help with coding tasks. I can read files using the 'read_file' tool, list files in directories with 'list_files', and edit files by replacing strings or creating new content with 'edit_file'. Ask me anything for assistance!
