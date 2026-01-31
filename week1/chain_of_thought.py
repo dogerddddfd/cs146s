@@ -37,7 +37,7 @@ Answer: 43
 USER_PROMPT = """
 Solve this problem, then give the final answer on the last line as "Answer: <number>".
 
-what is 2^{12345} (mod 100)?
+what is 3^{12345} (mod 100)?
 """
 
 
